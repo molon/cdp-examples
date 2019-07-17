@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
@@ -23,8 +24,16 @@ func main() {
 	// run server
 	go testServer(fmt.Sprintf(":%d", *flagPort))
 
+	ctx, cancel := chromedp.NewExecAllocator(
+		context.Background(),
+		append(chromedp.DefaultExecAllocatorOptions[:],
+			chromedp.Flag("headless", false),
+			chromedp.Flag("enable-automation", false),
+		)...)
+	defer cancel()
+
 	// create context
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel = chromedp.NewContext(ctx)
 	defer cancel()
 
 	// run task list
@@ -35,8 +44,17 @@ func main() {
 }
 
 func visible(host string) chromedp.Tasks {
+	var box1Visible, box2Visible bool
 	return chromedp.Tasks{
-		chromedp.Navigate(host),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			log.Printf("time:%v", time.Now())
+			return nil
+		}),
+		chromedp.Navigate(`https://www.solebox.com/`),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			log.Printf("time:%v", time.Now())
+			return nil
+		}),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			_, exp, err := runtime.Evaluate(makeVisibleScript).Do(ctx)
 			if err != nil {
@@ -47,12 +65,18 @@ func visible(host string) chromedp.Tasks {
 			}
 			return nil
 		}),
+		chromedp.CheckVisible(`#box1`, &box1Visible),
+		chromedp.CheckVisible(`#box2`, &box2Visible),
 		chromedp.ActionFunc(func(context.Context) error {
+			log.Printf("box1Visible:%v box2Visible:%v", box1Visible, box2Visible)
 			log.Printf("waiting 3s for box to become visible")
 			return nil
 		}),
 		chromedp.WaitVisible(`#box1`),
+		chromedp.CheckVisible(`#box1`, &box1Visible),
+		chromedp.CheckVisible(`#box2`, &box2Visible),
 		chromedp.ActionFunc(func(context.Context) error {
+			log.Printf("box1Visible:%v box2Visible:%v", box1Visible, box2Visible)
 			log.Printf(">>>>>>>>>>>>>>>>>>>> BOX1 IS VISIBLE")
 			return nil
 		}),

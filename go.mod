@@ -1,9 +1,10 @@
 module github.com/chromedp/examples
 
-go 1.11
+go 1.12
 
 require (
-	github.com/chromedp/cdproto v0.0.0-20190701071144-1240e427ea55
+	github.com/chromedp/cdproto v0.0.0-20190712010927-387ddc1113d4
 	github.com/chromedp/chromedp v0.3.1-0.20190629175119-8798fb24e2e7
-	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
 )
+
+replace github.com/chromedp/chromedp => /Users/molon/go/src/github.com/molon/chromedp
