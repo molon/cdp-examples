@@ -50,7 +50,7 @@ func visible(host string) chromedp.Tasks {
 			log.Printf("time:%v", time.Now())
 			return nil
 		}),
-		chromedp.Navigate(`https://www.solebox.com/`),
+		chromedp.Navigate(host),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			log.Printf("time:%v", time.Now())
 			return nil

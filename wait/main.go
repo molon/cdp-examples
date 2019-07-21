@@ -5,7 +5,9 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 )
 
@@ -30,13 +32,18 @@ func main() {
 	if err := chromedp.Run(
 		ctx,
 		chromedp.Navigate(`about:blank`),
-		chromedp.Navigate(`https://www.solebox.com/index.php?actcontrol=payment&cl=payment&fnc=validatepayment&paymentid=globalpaypal&lang=0&stoken=&userfrom=`, chromedp.NavigateNoWait),
+		network.Enable(),
+		network.SetExtraHTTPHeaders(network.Headers(map[string]interface{}{
+			"cache-control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+		})),
+		chromedp.Navigate(`https://www.baidu.com`, chromedp.NavigateNoWait),
 		chromedp.WaitOneOf(&waitIdx,
 			// chromedp.WaitVisible(hasLoginSel),
 			// chromedp.WaitVisible(emailSel),
 			chromedp.WaitNavigate(chromedp.NavigateWaitEventLoadEventFired),
 			chromedp.WaitLocation(&urlstr),
 		),
+		chromedp.Sleep(300*time.Second),
 	); err != nil {
 		log.Fatal(err)
 	}
