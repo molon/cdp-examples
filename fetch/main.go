@@ -104,7 +104,7 @@ func tasks() chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Undetectable(),
 		fetch.Enable(),
-		network.Enable(),
+		// network.Enable(),
 		chromedp.Navigate("https://www.baidu.com/"),
 		chromedp.Sleep(time.Second * 100),
 	}
